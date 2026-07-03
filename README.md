@@ -1,87 +1,208 @@
-<div align="center">
-  
-  # Telegram WS Proxy Android
-<br>
-  <img src="https://img.shields.io/badge/Android-SDK_24--36-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android SDK">
-  <img src="https://img.shields.io/badge/Rust-1.70+-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust Version">
-  <img src="https://img.shields.io/badge/Kotlin-Native-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin">
-  <a href="https://github.com/amurcanov/tg-ws-proxy-android/stargazers">
-    <img src="https://img.shields.io/github/stars/amurcanov/tg-ws-proxy-android?style=for-the-badge&logo=github&color=ffca28&labelColor=24292e" alt="Stars">
-  </a>
-</div>
-<br>
+<h1 align="center">TG WS Proxy iOS</h1>
 
-**TG WS Proxy Android** — это локальный **MTProto-прокси** для Telegram на Android. Приложение помогает частично решать проблемы и в ряде сценариев ускоряет работу мессенджера, перенаправляя трафик через защищённые CloudFlare WebSocket-соединения или напрямую к датацентрам Telegram.
+<h4 align="center">Локальный MTProto-прокси для Telegram на iOS с Rust-ядром, WidgetKit, Live Activity и опциональным Packet Tunnel.</h4>
 
-> [!WARNING]
-> ### RUST & GOLANG
-> Ядро проекта переписано на Rust и GO больше не поддерживается. Старое ядро можно найти в сурсах
->
+<p align="center">
+  <a href="docs/README.md">English</a>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge&logo=gnu&logoColor=white" alt="GPLv3"></a>
+  <img src="https://img.shields.io/badge/iOS-17%2B-black?style=for-the-badge&logo=apple&logoColor=white" alt="iOS 17+">
+  <img src="https://img.shields.io/badge/Swift-SwiftUI-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="SwiftUI">
+  <img src="https://img.shields.io/badge/Core-Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust">
+</p>
 
 ---
 
-<img width="972" height="696" alt="MyCollages (5)" src="https://github.com/user-attachments/assets/7c9b9f2a-fc60-4aee-b93d-db950e24555c" />
-
-## Возможности Android-версии
-
-- **Современный UI/UX:** приложение полностью адаптировано под актуальный Android-интерфейс на базе Material 3 и Jetpack Compose. Основные действия доступны быстро и без перегруженных экранов.
-- **Интеграция с Telegram:** кнопка **«Применить в Telegram»** автоматически передаёт прокси в совместимые клиенты через `tg://proxy` (AyuGram, Plus Messenger, NekoGram и другие).
-- **Фоновый режим:** используется `Foreground Service`, уведомление о работе сервиса и дополнительная логика удержания соединения, чтобы Android не выгружал прокси слишком агрессивно.
-- **Лог-вьюер:** встроенный просмотр событий в реальном времени помогает быстро понять, что происходит с подключением, маршрутом и пулом соединений.
-- **Темы и палитры:** поддерживаются Dynamic Colors на Android 12+, а также встроенные палитры для более старых устройств.
-- **Авто-обновления внутри приложения:** вручную проверять релизы больше не нужно — когда выйдет новая версия, приложение само покажет уведомление об обновлении.
-- **Раздел «Информация»:** внутри приложения есть расширенная справка по настройкам, особенностям CloudFlare, пулу WS-соединений и ручной конфигурации датацентров.
-
----
-
-## Как это работает
+**TG WS Proxy iOS** запускает Rust-версию TG WS Proxy на iPhone и предоставляет Telegram локальный MTProto endpoint:
 
 ```text
-Telegram Android → Локальный MTProto (по умолчанию 127.0.0.1:1443) → TG WS Proxy → WSS (через CloudFlare или напрямую) → Telegram DC
+Telegram → 127.0.0.1:1443 → Rust TG WS Proxy → WSS / Cloudflare → Telegram DC
 ```
 
-1. Приложение поднимает локальный MTProto-прокси средствами нативного движка на языке **Rust**.
-2. Перехватывает подключения Telegram через локальный порт и сгенерированный секретный ключ.
-3. Извлекает `DC ID` из исходного пакета и устанавливает защищённое WebSocket (`TLS`) соединение с нужным датацентром, при необходимости проксируя трафик через CloudFlare.
-4. Использует пул соединений, keepalive-механику и fallback-сценарии для более устойчивой работы в реальных сетевых условиях.
-
-## Быстрый старт
-
-1. Скачайте актуальный `APK` со **[страницы релизов](https://github.com/amurcanov/tg-ws-proxy-android/releases)**.
-2. Установите приложение на ваш Android-смартфон.
-3. Откройте **TG WS Proxy Android**.
-4. Ознакомьтесь со справкой внутри приложения.
-5. Нажмите **«Запустить прокси»** — появится уведомление о работе в фоновом режиме.
-6. Нажмите **«Применить в Telegram»** — откроется Telegram-клиент, где останется только подтвердить подключение.
+> [!CAUTION]
+> **Это экспериментальный сетевой инструмент. Он работает, но ошибочная конфигурация Packet Tunnel может полностью «убить» интернет на устройстве до отключения VPN, переустановки приложения или перезагрузки iPhone. Приложение не проходило аудит безопасности. Используйте только на свой риск и не устанавливайте IPA из источников, которым не доверяете.**
 
 ---
 
-# 🎦 Видео гайд по установке и использованию
+## ✨ Возможности
 
-<div align="center">
-
-<img width="1376" height="768" alt="578516258-6b2df494-de8d-44a2-a281-389fc7551a7c" src="https://github.com/user-attachments/assets/ed1449d4-0a14-4b46-8f35-b787bdee3e32" />
-
-<br><br>
-
-[**Смотреть на YouTube**](https://youtu.be/RP4RwyEHpwc) | [**Смотреть на VK Video**](https://vkvideo.ru/video-234234162_456239074) | [**Смотреть в Telegram**](https://t.me/avencoreschat/506796)
-
-</div>
-
----
-
-
-* **Краши и проблемы с установкой:** если у вас возникают сбои, вылеты или ошибки при установке, пожалуйста, сохраняйте отчёты и ссылки на них. Также ознакомьтесь с блоком `NOTE` ниже и поднимайте полноценные `issue` с полезной технической информацией.
-
-
-> [!NOTE]
-> ### Отчёты об ошибках
-> Приложение адаптировано под мобильные сети, однако проблемы с фоновой работой всё ещё возможны из-за системных ограничений или сети.
->
-> Если у вас возникла проблема, сбой или вопрос, пожалуйста, нажмите кнопку **«Собрать отчёт»** внутри приложения и приложите полученные данные к вашему `issue`. Мелкие ошибки в логах при нормально работающем прокси можно игнорировать.
+- локальный MTProto-прокси на Rust;
+- Cloudflare Workers, пользовательский домен и обновляемый список доменов;
+- размеры WebSocket-пула `2`, `4` или `6`;
+- статистика трафика, состояние пула, логи и диагностика;
+- Liquid Glass с возможностью отключения;
+- Live Activity и Dynamic Island одним компонентом `la`;
+- интерактивный Home Screen Widget;
+- системный toggle для Control Center;
+- App Intents и Siri Shortcuts;
+- deep links для запуска, остановки и настройки;
+- RU/EN интерфейс;
+- автоматический fallback на loopback, если Packet Tunnel недоступен.
 
 ---
 
-## Лицензия
+## 📚 Подробное описание работы
 
-Этот форк распространяется под лицензией **GPLv3**. Оригинальный код `tg-ws-proxy` от [Flowseal](https://github.com/Flowseal) доступен под лицензией **MIT**.
+[Как работает iOS-приложение: режимы, фон, поток данных, ограничения](docs/ARCHITECTURE.ru.md)
+
+---
+
+## 🧬 Происхождение и благодарности
+
+- [Flowseal/tg-ws-proxy](https://github.com/Flowseal/tg-ws-proxy) — оригинальный проект и основная идея;
+- [amurcanov/tg-ws-proxy-android](https://github.com/amurcanov/tg-ws-proxy-android) — Rust-ядро и Android-форк, используемые как upstream;
+- [Flowseal/tg-ws-proxy issue #389](https://github.com/Flowseal/tg-ws-proxy/issues/389) — FAQ и полезное обсуждение;
+- [IMDelewer/tg-ws-proxy-ios](https://github.com/IMDelewer/tg-ws-proxy-ios) — iOS-оболочка, сборочная система и интеграция Apple frameworks.
+
+Rust-ядро подключено как git submodule в `vendor/tg-ws-proxy-android`. Из него используются только `src/*.rs`, `Cargo.toml` и `Cargo.lock`. iOS-адаптация накладывается патчем `scripts/patches/ios-ffi.patch`.
+
+---
+
+## 📦 Варианты установки
+
+| Вариант | Bundle ID | Расширения | Фон |
+| :--- | :--- | :---: | :--- |
+| AltStore / SideStore | `com.delewer.tgwsproxy.altstore` | опционально | зависит от entitlements |
+| Sideload / iLoader / TrollStore | `com.delewer.tgwsproxy.sideload` | опционально | Packet Tunnel при подходящей подписи |
+| LiveContainer | `com.delewer.tgwsproxy.lc` | нет | только пока гостевое приложение активно |
+| Simulator | `com.delewer.tgwsproxy.sim` | все для проверки | loopback fallback |
+
+Обычное iOS-приложение нельзя бесконечно удерживать в фоне. Для постоянной работы нужен `PacketTunnelProvider`, который запускается системой отдельно от интерфейса.
+
+### Бесплатный Apple ID
+
+- provisioning profile и App IDs действуют 7 дней;
+- AltStore может обновлять подпись, пока AltServer доступен по Wi‑Fi или USB;
+- бесплатный профиль может не содержать Network Extension или App Groups entitlement;
+- LiveContainer не регистрирует вложенные app extensions.
+
+---
+
+## 🚀 Сборка
+
+Требуются полный Xcode и Rust stable:
+
+```bash
+rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+```
+
+Инициализация submodule:
+
+```bash
+git submodule update --init
+```
+
+Универсальный builder:
+
+```bash
+./build.sh -p sim --install
+./build.sh -p sim -c wd,la,cc,vpn --install
+./build.sh -p side -c wd,la,cc,vpn
+./build.sh -p alt
+./build.sh -p lc
+```
+
+Платформы:
+
+| Код | Назначение |
+| :---: | :--- |
+| `sim` | активный iOS Simulator |
+| `side` | iLoader, Sideloadly, TrollStore и другие signer-ы |
+| `alt` | AltStore / SideStore |
+| `lc` | LiveContainer без extensions |
+
+Компоненты:
+
+| Код | Компонент |
+| :---: | :--- |
+| `wd` | Home Screen Widget |
+| `la` | Live Activity + Dynamic Island |
+| `cc` | Control Center toggle, iOS 18+ |
+| `vpn` | Packet Tunnel / Network Extension |
+| `none` | только приложение |
+
+`--install` доступен для `sim`: builder собирает Rust, приложение и выбранные extensions, устанавливает их в активный Simulator и запускает приложение.
+
+Артефакты сохраняются в `dist/`.
+
+---
+
+## 🔗 Deep links
+
+```text
+tgwsproxy://home
+tgwsproxy://settings
+tgwsproxy://logs
+tgwsproxy://info
+tgwsproxy://collect_logs?copy=true
+
+tgwsproxy://?action=start
+tgwsproxy://?action=stop
+tgwsproxy://?action=update_cf_link
+tgwsproxy://?action=show_cf_domains
+tgwsproxy://?action=add_cf_domain&domain=worker.example.com
+tgwsproxy://?action=clear_cf_domain
+```
+
+Полная настройка:
+
+```text
+tgwsproxy://?action=config&addr=127.0.0.1&port=1443&pool=4&cf_proxy=true&cf_domain=worker.example.com&verbose=false&autostart=true&reconnect=true&glass=true&dynamic_island=true&language=ru&theme=system&accent=telegram&start=true&open=home
+```
+
+---
+
+## 🔄 Rust upstream
+
+Ручная синхронизация из submodule:
+
+```bash
+./scripts/sync-rust-upstream.sh
+cargo check --manifest-path src-wrapper/Cargo.toml --locked
+```
+
+Текущий commit записан в `src-wrapper/UPSTREAM_COMMIT`, источник — в `src-wrapper/UPSTREAM_URL`, iOS-адаптация — в `scripts/patches/ios-ffi.patch`.
+
+---
+
+## 🗂 Структура
+
+```text
+tg-ws-proxy-ios/
+├── .github/workflows/       GitHub Actions
+├── config/                  варианты bundle ID
+├── docs/                    документация
+├── ios/
+│   ├── TgWsProxy/           SwiftUI-приложение
+│   ├── PacketTunnel/        Network Extension
+│   └── StatusWidgets/       widgets, Live Activity, Control Center
+├── scripts/
+│   ├── patches/             iOS FFI patch
+│   ├── build-rust-ios.sh
+│   └── sync-rust-upstream.sh
+├── src-wrapper/             рабочая копия Rust (upstream + patch)
+├── tests/                   C ABI smoke test
+├── vendor/
+│   └── tg-ws-proxy-android/ upstream репозиторий (submodule)
+├── build.sh                 единая точка сборки
+└── dist/                    собранные IPA
+```
+
+---
+
+## ⚖️ Лицензии
+
+- Rust fork и этот объединённый проект распространяются по [GPLv3](LICENSE).
+- Оригинальный проект Flowseal содержит MIT-лицензированный код; копия лицензии находится в [LICENSE-flowseal](LICENSE-flowseal).
+- Названия Telegram и Apple принадлежат соответствующим правообладателям. Проект не аффилирован с Telegram FZ-LLC или Apple Inc.
+
+---
+
+<p align="center">
+  Powered by <a href="https://github.com/Flowseal/tg-ws-proxy">Flowseal/tg-ws-proxy</a>
+  and <a href="https://github.com/amurcanov/tg-ws-proxy-android">amurcanov/tg-ws-proxy-android</a>
+</p>
+
+<p align="center"><sub>Maintained by <a href="https://github.com/IMDelewer">IMDelewer</a></sub></p>

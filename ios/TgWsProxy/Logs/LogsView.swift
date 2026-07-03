@@ -1,0 +1,145 @@
+import SwiftUI
+import UIKit
+
+struct LogsTabView: View {
+    @ObservedObject private var store = LogStore.shared
+    @EnvironmentObject private var proxy: ProxyViewModel
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text("\("Строк:".tgLoc) \(store.lines.count)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                ShareLink(item: store.joined()) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .disabled(store.lines.isEmpty)
+                Button {
+                    UIPasteboard.general.string = store.joined()
+                    Haptics.impact(.light)
+                } label: {
+                    Image(systemName: "doc.on.doc")
+                }
+                .disabled(store.lines.isEmpty)
+                Button(role: .destructive) {
+                    store.clear()
+                    Haptics.impact(.light)
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .disabled(store.lines.isEmpty)
+            }
+            .padding(.horizontal, 18)
+
+            reportCard
+                .padding(.horizontal, 16)
+
+            LogConsole(store: store)
+                .card(padding: 0)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
+        }
+    }
+
+    private var reportCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Отчёты об ошибках".tgLoc, systemImage: "exclamationmark.bubble")
+                .font(.subheadline.weight(.semibold))
+            Text("Приложение адаптировано под мобильные сети, но проблемы с фоновой работой возможны из-за ограничений системы или сети. Если возникла проблема — нажмите «Собрать отчёт» и приложите данные к issue. Мелкие ошибки в логах при работающем прокси можно игнорировать.".tgLoc)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ShareLink(item: store.report(context: proxy.diagnosticsContext)) {
+                Label("Собрать отчёт".tgLoc, systemImage: "doc.badge.arrow.up")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 12))
+        }
+        .card()
+    }
+
+}
+
+struct LogsView: View {
+    @ObservedObject private var store = LogStore.shared
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            LogConsole(store: store)
+                .navigationTitle("Логи ядра".tgLoc)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Закрыть".tgLoc) { dismiss() }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            ShareLink(item: store.joined()) {
+                                Label("Поделиться".tgLoc, systemImage: "square.and.arrow.up")
+                            }
+                            Button {
+                                UIPasteboard.general.string = store.joined()
+                            } label: {
+                                Label("Копировать всё".tgLoc, systemImage: "doc.on.doc")
+                            }
+                            Button(role: .destructive) {
+                                store.clear()
+                            } label: {
+                                Label("Очистить".tgLoc, systemImage: "trash")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                        }
+                    }
+                }
+        }
+    }
+}
+
+private struct LogConsole: View {
+    @ObservedObject var store: LogStore
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 3) {
+                    if store.lines.isEmpty {
+                        ContentUnavailableView(
+                            "Логи пусты".tgLoc,
+                            systemImage: "doc.text.magnifyingglass",
+                            description: Text("Запустите прокси, чтобы увидеть вывод Rust-ядра.".tgLoc)
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 280)
+                    }
+                    ForEach(Array(store.lines.enumerated()), id: \.offset) { _, line in
+                        Text(line)
+                            .font(.system(size: 11, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(color(for: line))
+                            .textSelection(.enabled)
+                    }
+                    Color.clear.frame(height: 1).id("bottom")
+                }
+                .padding(12)
+            }
+            .scrollIndicators(.hidden)
+            .onChange(of: store.lines.count) { _, _ in
+                withAnimation(.easeOut(duration: 0.2)) {
+                    proxy.scrollTo("bottom", anchor: .bottom)
+                }
+            }
+        }
+    }
+
+    private func color(for line: String) -> Color {
+        if line.localizedCaseInsensitiveContains("error") { return .red }
+        if line.localizedCaseInsensitiveContains("warn") { return .orange }
+        if line.localizedCaseInsensitiveContains("debug") { return .secondary }
+        return .primary
+    }
+}

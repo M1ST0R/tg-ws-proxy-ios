@@ -1,0 +1,3 @@
+[submodule "vendor/tg-ws-proxy-android"]
+	path = vendor/tg-ws-proxy-android
+	url = https://github.com/amurcanov/tg-ws-proxy-android.git

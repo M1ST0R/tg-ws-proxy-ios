@@ -30,7 +30,7 @@ final class LogStore: ObservableObject {
                 .split(whereSeparator: \.isNewline)
                 .map(String.init)
             guard !newLines.isEmpty else { return }
-            Task { [weak self] @MainActor in
+            Task { @MainActor [weak self] in
                 self?.append(newLines)
             }
         }

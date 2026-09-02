@@ -64,7 +64,7 @@ final class Pinger: ObservableObject {
             let finish: (Int?) -> Void = { value in
                 lock.async {
                     guard !finished else { return }
-                    finished = true
+                    @State private var finished = false
                     connection.cancel()
                     continuation.resume(returning: value)
                 }

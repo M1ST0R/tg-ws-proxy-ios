@@ -18,6 +18,7 @@ jobs:
 
       - name: Build Archive
         run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
           xcodebuild archive \
             -project TgWsProxy.xcodeproj \
             -scheme "TgWsProxy" \

@@ -50,7 +50,7 @@ struct CardModifier: ViewModifier {
         if #available(iOS 26.0, *), liquidGlass {
             content
                 .padding(padding)
-                .glassEffect(.regular, in: shape)
+                .background(.ultraThinMaterial, in: shape)
         } else {
             content
                 .padding(padding)

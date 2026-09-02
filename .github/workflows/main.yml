@@ -15,9 +15,13 @@ jobs:
 
       - name: Build Archive
         run: |
+          # Автоматическое определение названия схемы проекта
+          SCHEME=$(xcodebuild -list -project TgWsProxy.xcodeproj | awk '/Schemes:/{flag=1; next} /^$/{flag=0} flag' | head -n 1 | xargs)
+          echo "Using scheme: $SCHEME"
+
           xcodebuild archive \
-            -project *.xcodeproj \
-            -scheme "tg-ws-proxy-ios" \
+            -project TgWsProxy.xcodeproj \
+            -scheme "$SCHEME" \
             -sdk iphoneos \
             -archivePath build/App.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
@@ -25,7 +29,7 @@ jobs:
 
       - name: Export Payload (.ipa)
         run: |
-          mkdir Payload
+          mkdir -p Payload
           cp -r build/App.xcarchive/Products/Applications/*.app Payload/
           zip -r tg-ws-proxy.ipa Payload
 

@@ -75,7 +75,7 @@ private struct GlassBarModifier: ViewModifier {
     @ViewBuilder
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *), liquidGlass {
-            content.glassEffect(.regular, in: Capsule())
+            content.background(.ultraThinMaterial, in: Capsule())
         } else {
             content
                 .background(.ultraThinMaterial, in: Capsule())
